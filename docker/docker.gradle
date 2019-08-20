@@ -12,8 +12,8 @@ buildscript {
 ext {
 //    git = org.ajoberstar.grgit.Grgit.open(file('.'))
 //    revisionDate = git.head().getTime()
-    dockerUsername = System.properties["\$DOCKER_USERNAME"]
-    dockerPassword = System.properties["\$DOCKER_PASSWORD"]
+    dockerUsername = System.getenv("DOCKER_USERNAME")
+    dockerPassword = System.getenv("DOCKER_PASSWORD")
     dockerImageName = "almazic91/$project.name"
     dockerImageTag = "${project.version}"
 }
@@ -27,6 +27,10 @@ import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 
 docker {
     url = 'tcp://127.0.0.1:2375'
+}
+
+dockerCompose {
+    useComposeFiles = ['./docker/docker-compose-test.yaml']
 }
 
 task copyDockerfile(group: 'docker', type: Copy) {

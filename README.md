@@ -1,4 +1,5 @@
-# Сервис ms-translator
+[![Build Status](https://travis-ci.org/zagamaza/sub-learn-translator.svg?branch=master)](https://travis-ci.org/zagamaza/sub-learn-translator)
+# Сервис sub-learn-translator
 
 ## Установка, настройка и запуск
 
@@ -6,7 +7,8 @@
 
 * Java OpenJDK 11
 * SpringBoot 2.1.6.RELEASE
-* Maven
+* Spring Cloud 2.1.2.RELEASE
+* Gradle 5.4.1
 * Lombok 1.18.6
 
 
@@ -19,10 +21,11 @@ application.yaml
 
 ### Сборка приложения
 
-Проект собирается maven’ом из корневой папки командой:
+Проект собирается gradle’ом из корневой папки командой:
 
 ```
-mvn clean install
+build.sh  - Linux
+build.bat - Windows
 ```
 
 ### Запуск приложения

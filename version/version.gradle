@@ -57,8 +57,6 @@ ProjectVersion readVersion() {
         stream -> versionProperties.load(stream)
     }
     new ProjectVersion(
-            versionProperties.product.toString(),
-            versionProperties.region.toString(),
             versionProperties.major.toInteger(),
             versionProperties.minor.toInteger(),
             versionProperties.patch.toInteger()
@@ -66,15 +64,11 @@ ProjectVersion readVersion() {
 }
 
 class ProjectVersion {
-    String product
-    String region
     Integer major
     Integer minor
     Integer patch
 
-    ProjectVersion(String product, String region, Integer major, Integer minor, Integer patch) {
-        this.product = product
-        this.region = region
+    ProjectVersion(Integer major, Integer minor, Integer patch) {
         this.major = major
         this.minor = minor
         this.patch = patch
@@ -82,6 +76,6 @@ class ProjectVersion {
 
     @Override
     String toString() {
-        "$product.$region.$major.$minor.$patch"
+        "$major.$minor.$patch"
     }
 }

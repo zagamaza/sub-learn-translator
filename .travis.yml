@@ -1,0 +1,30 @@
+language: java
+jdk: oraclejdk11
+
+services:
+  - docker
+
+cache:
+  directories:
+    - "$HOME/.gradle/caches"
+    - "$HOME/.gradle/wrapper"
+    -
+before_install:
+  - chmod +x gradlew
+
+stages:
+  - build
+  - test
+  - pushImage
+
+jobs:
+  include:
+    - stage: build
+      language: java
+      script: ./gradlew clean assemble
+    - stage:
+      language: java
+      script: ./gradlew check
+    - stage:
+      if: branch = develop
+      script: ./gradlew pushImage
