@@ -39,3 +39,5 @@ docker-compose -f docker-compose-test.yaml up -d
 cd docker
 docker-compose -f docker-compose-test.yaml down 
 ```
+
+[![Build Status](https://travis-ci.org/zagamaza/sub-learn-ms-translator.svg?branch=develop)](https://travis-ci.org/zagamaza/sub-learn-ms-translator)
