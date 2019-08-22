@@ -1,5 +1,5 @@
 FROM openjdk:11.0.3-jre-slim-stretch
-COPY ms-translator.jar ms-translator.jar
-CMD ["java", "-jar", "ms-translator.jar"]
+COPY sub-learn-translator.jar sub-learn-translator.jar
+CMD ["java", "-jar", "sub-learn-translator.jar"]
 EXPOSE 8080
 

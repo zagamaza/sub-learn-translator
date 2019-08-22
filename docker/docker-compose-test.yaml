@@ -10,3 +10,7 @@ services:
     environment:
         SPRING_PROFILES_ACTIVE: default
         SERVER_PORT: 8080
+        YANDEX_DICT_URL:
+        YANDEX_DICT_KEY:
+        YANDEX_TRANSLATE_URL:
+        YANDEX_TRANSLATE_KEY.:
