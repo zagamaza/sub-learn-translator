@@ -22,9 +22,9 @@ jobs:
     - stage: build
       language: java
       script: ./gradlew clean assemble
-    - stage:
+    - stage: test
       language: java
       script: ./gradlew check
-    - stage:
-      if: branch = develop
+    - stage: pushImage
+      if: (branch = develop) AND (type = push)
       script: ./gradlew pushImage
