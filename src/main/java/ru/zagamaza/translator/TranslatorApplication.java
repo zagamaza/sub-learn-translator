@@ -6,10 +6,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients
-public class SubLearnApplication {
+public class TranslatorApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SubLearnApplication.class, args);
+        SpringApplication.run(TranslatorApplication.class, args);
     }
 
 }

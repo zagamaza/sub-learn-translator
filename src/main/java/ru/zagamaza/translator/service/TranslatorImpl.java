@@ -5,9 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import ru.zagamaza.translator.client.YandexWordTranslatorDictApi;
 import ru.zagamaza.translator.client.YandexTextTranslatorApi;
-import ru.zagamaza.translator.dto.ResponseDto;
+import ru.zagamaza.translator.client.YandexWordTranslatorDictApi;
+import ru.zagamaza.translator.dto.Lang;
+import ru.zagamaza.translator.dto.TranslationDto;
 import ru.zagamaza.translator.dto.TranslationResultDto;
 import ru.zagamaza.translator.dto.WordDto;
 
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TranslatorImpl implements Translator {
 
+    private static final String TEXT_KEY = "text";
+
     private final YandexWordTranslatorDictApi yandexWordTranslatorDictApi;
     private final YandexTextTranslatorApi yandexTextTranslatorApi;
 
@@ -29,49 +32,52 @@ public class TranslatorImpl implements Translator {
     String yandexTranslateApiKey;
 
     @Override
-    public WordDto translate(String source, String sourceLang, String targetLang) {
-        String lang = sourceLang + "-" + targetLang;
+    public WordDto translate(String source, Lang lang) {
+        WordDto wordDto = new WordDto();
+        wordDto.setLang(lang.toString());
 
-        ResponseDto.Defenition defenition = yandexWordTranslatorDictApi
-                .translate(yandexDictApiKey, source, lang)
+        yandexWordTranslatorDictApi
+                .translate(yandexDictApiKey, source, lang.toString())
                 .getDef()
-                .stream()
-                .findFirst()
-                .orElse(null);
+                .forEach(defenition -> {
+                    wordDto.setTranscription(defenition.getTs());
+                    wordDto.setWord(defenition.getText());
+                    wordDto.getTranslation()
+                           .add(new TranslationDto(
+                                   defenition.getPos(),
+                                   defenition.toList(defenition.getTr())
+                           ));
+                });
 
-        if (defenition == null) {
-            return null;
-        }
-        return new WordDto(
-                source,
-                defenition.getTs(),
-                defenition.getTr().stream()
-                          .map(ResponseDto.Translate::getText)
-                          .collect(Collectors.toList()),
-                lang
-        );
+        return wordDto;
     }
 
-    public List<WordDto> translate(List<String> texts, String sourceLang, String targetLang) {
+    public List<WordDto> translate(List<String> texts, Lang lang) {
         List<WordDto> words = new LinkedList<>();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>(4);
-        String lang = sourceLang + "-" + targetLang;
 
         for (String text : texts) {
-            params.add("text", text);
+            params.add(TEXT_KEY, text);
         }
         TranslationResultDto translate = yandexTextTranslatorApi
-                .translate(yandexTranslateApiKey, targetLang, params);
+                .translate(yandexTranslateApiKey, lang.toString(), params);
 
         List<String> translateWords = translate.getTexts();
         for (int i = 0; i < texts.size(); i++) {
             words.add(WordDto.builder()
-                             .lang(lang)
+                             .lang(lang.toString())
                              .word(texts.get(i))
-                             .translation(List.of(translateWords.get(i)))
+                             .translation(List.of(new TranslationDto(null, List.of(translateWords.get(i)))))
                              .build());
         }
         return words;
+    }
+
+    @Override
+    public List<WordDto> translateWithDictionary(List<String> source, Lang lang) {
+        return source.stream()
+                     .map(word -> translate(word, lang))
+                     .collect(Collectors.toList());
     }
 
 }
