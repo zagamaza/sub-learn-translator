@@ -4,6 +4,8 @@ task loadVersion(group: 'versioning') {
     project.version = readVersion()
 }
 
+task printVersion { doLast { print project.version} }
+
 task increasePatchVersion(group: 'versioning') {
     inputs.property('patch', project.version.patch)
     outputs.file versionFile
