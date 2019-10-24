@@ -31,4 +31,4 @@ jobs:
       script: ./gradlew pushImage
     - stage: deploy
       if: (branch = develop) AND (type = push)
-      script: bash scripts/deploy.sh -v $(./gredlew -q printVersion)
+      script: bash scripts/deploy.sh -v $(./gradlew -q printVersion)
