@@ -16,6 +16,7 @@ stages:
   - build
   - test
   - pushImage
+  - deploy
 
 jobs:
   include:
@@ -28,3 +29,6 @@ jobs:
     - stage: pushImage
       if: (branch = develop) AND (type = push)
       script: ./gradlew pushImage
+    - stage: deploy
+      if: (branch = develop) AND (type = push)
+      script: bash scripts/deploy.sh -v $(./gredlew -q printVersion)
