@@ -75,7 +75,7 @@ public class TranslatorImpl implements Translator {
 
     @Override
     public List<WordDto> translateWithDictionary(List<String> source, Lang lang) {
-        return source.stream()
+        return source.parallelStream()
                      .map(word -> translate(word, lang))
                      .collect(Collectors.toList());
     }
