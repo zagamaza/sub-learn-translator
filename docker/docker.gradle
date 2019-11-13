@@ -1,0 +1,59 @@
+buildscript {
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:4.9.0'
+    }
+}
+
+ext {
+//    git = org.ajoberstar.grgit.Grgit.open(file('.'))
+//    revisionDate = git.head().getTime()
+    dockerUsername = System.getenv("DOCKER_USERNAME")
+    dockerPassword = System.getenv("DOCKER_PASSWORD")
+    dockerImageName = "almazic91/$project.name"
+    dockerImageTag = "${project.version}"
+}
+
+apply plugin: DockerRemoteApiPlugin
+
+import com.bmuschko.gradle.docker.DockerRemoteApiPlugin
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+
+
+//
+// docker {
+//     url = 'tcp: // localhost: 2375'
+// }
+
+dockerCompose {
+    useComposeFiles = ['./docker/docker-compose-test.yaml']
+}
+
+task copyDockerfile(group: 'docker', type: Copy) {
+    dependsOn 'bootJar'
+    dependsOn 'test'
+    from "${projectDir}/docker/Dockerfile"
+    into "${buildDir}/libs/"
+}
+
+task buildImage(group: 'docker', type: DockerBuildImage) {
+    dependsOn 'copyDockerfile'
+    inputDir = file("${buildDir}/libs/")
+    tags.add("$project.name")
+    tags.add("${dockerImageName}:${dockerImageTag}")
+}
+
+task pushImage(group: 'docker', type: DockerPushImage) {
+    dependsOn 'buildImage'
+    tag = dockerImageTag
+    imageName = dockerImageName
+    registryCredentials.username = dockerUsername
+    registryCredentials.password = dockerPassword
+
+}
+

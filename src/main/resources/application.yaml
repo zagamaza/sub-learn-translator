@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+yandex:
+  dict:
+    url:
+    key:
+  translate:
+    url:
+    key:
