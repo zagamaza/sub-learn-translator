@@ -27,8 +27,8 @@ jobs:
       language: java
       script: ./gradlew check
     - stage: pushImage
-      if: (branch = develop) AND (type = push)
+      if: (branch = develop OR branch = master) AND type = push
       script: ./gradlew pushImage
     - stage: deploy
-      if: (branch = develop) AND (type = push)
+      if: (branch = develop OR branch = master) AND type = push
       script: bash scripts/deploy.sh -v $(./gradlew -q printVersion)
