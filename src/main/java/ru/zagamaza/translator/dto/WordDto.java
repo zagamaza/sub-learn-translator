@@ -16,6 +16,7 @@ public class WordDto {
 
     private String word;
     private String transcription;
+    private String mainTranslation;
     private List<TranslationDto> translation;
     private String lang;
 
