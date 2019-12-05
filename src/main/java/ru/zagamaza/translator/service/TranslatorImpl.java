@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import ru.zagamaza.translator.client.YandexTextTranslatorApi;
 import ru.zagamaza.translator.client.YandexWordTranslatorDictApi;
 import ru.zagamaza.translator.dto.Lang;
@@ -15,6 +16,8 @@ import ru.zagamaza.translator.dto.WordDto;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -82,6 +85,7 @@ public class TranslatorImpl implements Translator {
                             w.setTranscription(wordDto.getTranscription());
                             w.setTranslation(wordDto.getTranslation());
                         })
+                        .filter(w-> !StringUtils.isEmpty(w.getTranscription()) || !isEmpty(w.getTranslation()))
                         .collect(Collectors.toList());
     }
 
