@@ -40,7 +40,7 @@ public class TranslatorImpl implements Translator {
     @Retryable(
             value = {Exception.class},
             maxAttempts = 5,
-            backoff = @Backoff(delay = 5000, multiplier = 2))
+            backoff = @Backoff(delay = 1000, multiplier = 2))
     public WordDto translate(String source, Lang lang) {
         WordDto wordDto = new WordDto();
         wordDto.setLang(lang.toString());
@@ -84,6 +84,10 @@ public class TranslatorImpl implements Translator {
     }
 
     @Override
+    @Retryable(
+            value = {Exception.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 1000, multiplier = 2))
     public List<WordDto> translateWithDictionary(List<String> source, Lang lang) {
         List<WordDto> translate = translate(source, lang);
         return translate.parallelStream()
