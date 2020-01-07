@@ -2,6 +2,8 @@ package ru.zagamaza.translator.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -28,19 +30,24 @@ public class TranslatorImpl implements Translator {
     private final YandexWordTranslatorDictApi yandexWordTranslatorDictApi;
     private final YandexTextTranslatorApi yandexTextTranslatorApi;
 
-    @Value("${yandex.dict.key}")
-    String yandexDictApiKey;
+    @Value("${yandex.dict.key:}")
+    private String[] yandexDictApiKey;
 
     @Value("${yandex.translate.key}")
-    String yandexTranslateApiKey;
+    private String yandexTranslateApiKey;
 
     @Override
+    @Retryable(
+            value = {Exception.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 5000, multiplier = 2))
     public WordDto translate(String source, Lang lang) {
         WordDto wordDto = new WordDto();
         wordDto.setLang(lang.toString());
-
+        int randomNumber = (int)(Math.random() * (yandexDictApiKey.length));
+        final String key = yandexDictApiKey[randomNumber];
         yandexWordTranslatorDictApi
-                .translate(yandexDictApiKey, source, lang.toString())
+                .translate(key, source, lang.toString())
                 .getDef()
                 .forEach(defenition -> {
                     wordDto.setTranscription(defenition.getTs());

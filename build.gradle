@@ -44,6 +44,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.retry:spring-retry:1.1.5.RELEASE'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:2.1.2.RELEASE'
     implementation 'org.telegram:telegrambots-spring-boot-starter:4.3.1'
     compileOnly 'org.projectlombok:lombok'
