@@ -33,8 +33,8 @@ public class TranslatorImpl implements Translator {
     @Value("${yandex.dict.key:}")
     private String[] yandexDictApiKey;
 
-    @Value("${yandex.translate.key}")
-    private String yandexTranslateApiKey;
+    @Value("${yandex.translate.key:}")
+    private String[] yandexTranslateApiKey;
 
     @Override
     @Retryable(
@@ -62,6 +62,11 @@ public class TranslatorImpl implements Translator {
         return wordDto;
     }
 
+    @Override
+    @Retryable(
+            value = {Exception.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 1000, multiplier = 2))
     public List<WordDto> translate(List<String> texts, Lang lang) {
         List<WordDto> words = new LinkedList<>();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>(4);
@@ -69,8 +74,10 @@ public class TranslatorImpl implements Translator {
         for (String text : texts) {
             params.add(TEXT_KEY, text);
         }
+        int randomNumber = (int)(Math.random() * (yandexTranslateApiKey.length));
+        final String key = yandexTranslateApiKey[randomNumber];
         TranslationResultDto translate = yandexTextTranslatorApi
-                .translate(yandexTranslateApiKey, lang.toString(), params);
+                .translate(key, lang.toString(), params);
 
         List<String> translateWords = translate.getTexts();
         for (int i = 0; i < texts.size(); i++) {
@@ -81,23 +88,6 @@ public class TranslatorImpl implements Translator {
                              .build());
         }
         return words;
-    }
-
-    @Override
-    @Retryable(
-            value = {Exception.class},
-            maxAttempts = 5,
-            backoff = @Backoff(delay = 1000, multiplier = 2))
-    public List<WordDto> translateWithDictionary(List<String> source, Lang lang) {
-        List<WordDto> translate = translate(source, lang);
-        return translate.parallelStream()
-                        .peek(w -> {
-                            WordDto wordDto = translate(w.getWord(), lang);
-                            w.setTranscription(wordDto.getTranscription());
-                            w.setTranslation(wordDto.getTranslation());
-                        })
-                        .filter(w-> !StringUtils.isEmpty(w.getTranscription()) || !isEmpty(w.getTranslation()))
-                        .collect(Collectors.toList());
     }
 
 }

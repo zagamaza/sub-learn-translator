@@ -11,6 +11,4 @@ public interface Translator {
 
     List<WordDto> translate(List<String> source, Lang lang);
 
-    List<WordDto> translateWithDictionary(List<String> source, Lang lang);
-
 }
